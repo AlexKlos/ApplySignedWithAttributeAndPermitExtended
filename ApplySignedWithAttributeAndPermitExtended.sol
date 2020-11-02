@@ -112,7 +112,7 @@ interface UniswapV2Router02 {
 
 
 /**
- ApplySignedWithAttributeAndPermitExtended contains a single function 
+ ApplySignedWithAttributeAndPermitExtended contract contains a single function 
  applySignedWithAttributeAndPermitDecorator that is a decorator for the
  applySignedWithAttributeAndPermit function of the Everest contract.
  */
@@ -147,7 +147,9 @@ contract ApplySignedWithAttributeAndPermitExtended {
         if (dai.balanceOf(msg.sender) < 10000000000000000000) {
             uint _daiValue = SafeMath.sub(10000000000000000000, dai.balanceOf(msg.sender));
             address[] memory _path;
+            // WETH9 contract address
             _path[0] = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+            // Dai contract address
             _path[1] = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
             uniswap.swapETHForExactTokens(_daiValue, _path, msg.sender, SafeMath.add(block.timestamp, 600));
         }
