@@ -120,7 +120,7 @@ contract ApplySignedWithAttributeAndPermitExtended {
     // Everest contract address
     Everest everest = Everest(0x445B774C012c5418d6D885f6cbfEB049a7FE6558);
     // UniswapV2Router02 contract address
-    UniswapV2Router02 uniswap = UniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
+    UniswapV2Router02 uniswap = UniswapV2Router02(0x7a250d5630b4cf539739df2c5dacb4c659f2488d);
     // Dai contract address
     Dai dai = Dai(0x6B175474E89094C44Da98b954EedeAC495271d0F);
     
@@ -147,7 +147,7 @@ contract ApplySignedWithAttributeAndPermitExtended {
         if (dai.balanceOf(msg.sender) < 10000000000000000000) {
             uint _daiValue = SafeMath.sub(10000000000000000000, dai.balanceOf(msg.sender));
             address[] memory _path;
-            // WETH9 contract address
+            // WETH contract address
             _path[0] = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
             // Dai contract address
             _path[1] = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
@@ -156,6 +156,13 @@ contract ApplySignedWithAttributeAndPermitExtended {
         
         everest.applySignedWithAttributeAndPermit(_newMember, _sigV, _sigR, _sigS, _memberOwner, 
         _offChainDataName, _offChainDataValue, _offChainDataValidity);
+    }
+    
+    /**
+    Fallback function.
+    */
+    function () external payable {
+        revert ();
     }
     
 }
