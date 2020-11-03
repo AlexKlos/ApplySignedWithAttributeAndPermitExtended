@@ -120,7 +120,7 @@ contract ApplySignedWithAttributeAndPermitExtended {
     // Everest contract address
     Everest everest = Everest(0x445B774C012c5418d6D885f6cbfEB049a7FE6558);
     // UniswapV2Router02 contract address
-    UniswapV2Router02 uniswap = UniswapV2Router02(0x7a250d5630b4cf539739df2c5dacb4c659f2488d);
+    UniswapV2Router02 uniswap = UniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
     // Dai contract address
     Dai dai = Dai(0x6B175474E89094C44Da98b954EedeAC495271d0F);
     
