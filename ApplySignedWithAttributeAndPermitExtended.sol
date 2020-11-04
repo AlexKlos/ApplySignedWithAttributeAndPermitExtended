@@ -108,6 +108,11 @@ interface UniswapV2Router02 {
         external
         payable
         returns (uint[] memory amounts);
+    
+    function getAmountsIn(uint amountOut, address[] calldata path)
+        external
+        view
+        returns (uint[] memory amounts);
 }
 
 
@@ -117,11 +122,11 @@ interface UniswapV2Router02 {
  applySignedWithAttributeAndPermit function of the Everest contract.
  */
 contract ApplySignedWithAttributeAndPermitExtended {
-    // Everest contract address
+    // Everest contract instance
     Everest everest = Everest(0x445B774C012c5418d6D885f6cbfEB049a7FE6558);
-    // UniswapV2Router02 contract address
+    // UniswapV2Router02 contract instance
     UniswapV2Router02 uniswap = UniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
-    // Dai contract address
+    // Dai contract instance
     Dai dai = Dai(0x6B175474E89094C44Da98b954EedeAC495271d0F);
     
     /**
@@ -151,7 +156,9 @@ contract ApplySignedWithAttributeAndPermitExtended {
             _path[0] = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
             // Dai contract address
             _path[1] = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
-            uniswap.swapETHForExactTokens(_daiValue, _path, msg.sender, SafeMath.add(block.timestamp, 600));
+            uint _ethValue = uniswap.getAmountsIn(_daiValue, _path)[0];
+            _ethValue += SafeMath.div(_ethValue, 100);
+            uniswap.swapETHForExactTokens.value(_ethValue)(_daiValue, _path, msg.sender, SafeMath.add(block.timestamp, 600));
         }
         
         everest.applySignedWithAttributeAndPermit(_newMember, _sigV, _sigR, _sigS, _memberOwner, 
