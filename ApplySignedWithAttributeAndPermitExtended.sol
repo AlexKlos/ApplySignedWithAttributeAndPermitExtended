@@ -1,9 +1,5 @@
 pragma solidity =0.5.12;
 
-/**
- The Dai contract does not have a balanceOf function, so it is imported in its entirety.
- */
-import "./Dai.sol";
 
 
 /**
@@ -104,14 +100,13 @@ interface Everest {
  Interface for accessing UniswapV2Router02 smart contract functions. 
  */
 interface UniswapV2Router02 {
-    function swapETHForExactTokens(uint amountOut, address[] calldata path, address to, uint deadline)
-        external
+    function swapETHForExactTokens(
+        uint amountOut,
+        address[] calldata path,
+        address to,
+        uint deadline
+    ) external
         payable
-        returns (uint[] memory amounts);
-    
-    function getAmountsIn(uint amountOut, address[] calldata path)
-        external
-        view
         returns (uint[] memory amounts);
 }
 
@@ -126,17 +121,15 @@ contract ApplySignedWithAttributeAndPermitExtended {
     Everest everest = Everest(0x445B774C012c5418d6D885f6cbfEB049a7FE6558);
     // UniswapV2Router02 contract instance
     UniswapV2Router02 uniswap = UniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
-    // Dai contract instance
-    Dai dai = Dai(0x6B175474E89094C44Da98b954EedeAC495271d0F);
     
     /**
      This function calls the applySignedWithAttributeAndPermit function 
      of the Everest contract and passes the argument values without modification. 
-     But before that, it checks the Dai on the balance of the user's address and 
-     if it is less than 10 dai, it calls the function swapETHForExactTokens 
+     But before that, it checks the msg.value > 0 and it calls the function swapETHForExactTokens 
      from the contract UniswapV2Router02 and swaps the required amount.
      */
     function applySignedWithAttributeAndPermitDecorator(
+        uint _daiValue,
         address _newMember,
         uint8[3] calldata _sigV,
         bytes32[3] calldata _sigR,
@@ -149,20 +142,19 @@ contract ApplySignedWithAttributeAndPermitExtended {
         require(_newMember != address(0), "Member can't be 0 address");
         require(_memberOwner != address(0), "Owner can't be 0 address");
         
-        if (dai.balanceOf(msg.sender) < 10000000000000000000) {
-            uint _daiValue = SafeMath.sub(10000000000000000000, dai.balanceOf(msg.sender));
+        if (msg.value > 0) {
             address[] memory _path;
             // WETH contract address
             _path[0] = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
             // Dai contract address
             _path[1] = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
-            uint _ethValue = uniswap.getAmountsIn(_daiValue, _path)[0];
-            _ethValue += SafeMath.div(_ethValue, 100);
-            uniswap.swapETHForExactTokens.value(_ethValue)(_daiValue, _path, msg.sender, SafeMath.add(block.timestamp, 600));
-        }
+            uniswap.swapETHForExactTokens.value(msg.value)
+                (_daiValue, _path, msg.sender, SafeMath.add(block.timestamp, 600));
+        } 
         
         everest.applySignedWithAttributeAndPermit(_newMember, _sigV, _sigR, _sigS, _memberOwner, 
-        _offChainDataName, _offChainDataValue, _offChainDataValidity);
+            _offChainDataName, _offChainDataValue, _offChainDataValidity);
+        
     }
     
     /**
